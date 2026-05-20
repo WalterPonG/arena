@@ -37,16 +37,19 @@ function applySeatState(data) {
             return;
         }
 
+	if ( mySet.has(id)) {
+                btn.classList.add('seat--mine');
+                return;
+        }
+
+
+
         if (locked.has(id)) {
             btn.classList.add('seat--locked');
             btn.disabled = true;
             return;
         }
 
-	if ( mySet.has(id)) {
-		btn.classList.add('seat--mine');
-		return;
-	}
 
         btn.classList.add('seat--free');
     });
@@ -202,8 +205,9 @@ document.addEventListener('click', async (e) => {
                 await lockSeat(id, getEventoId());
                 CarritoStore.add(item);
             }
-
-            await pintarLocks();
+            const data = await fetchSeatState(getEventoId());
+	    applySeatState(data);
+//            await pintarLocks();
             render();
 
         } catch (err) {
@@ -221,8 +225,9 @@ document.addEventListener('click', async (e) => {
         const id = remove.dataset.id;
 
         CarritoStore.remove(id);
-
-        await pintarLocks();
+	const data = await fetchSeatState(getEventoId());
+applySeatState(data);
+  //      await pintarLocks();
         render();
         return;
     }
@@ -251,8 +256,9 @@ document.addEventListener('click', async (e) => {
                 'X-CSRF-TOKEN': document.querySelector('meta[name="csrf-token"]').content
             }
         });
-
-        await pintarLocks();
+	const data = await fetchSeatState(getEventoId());
+applySeatState(data);
+    //    await pintarLocks();
         render();
 
         window.location.href = '/mis-entradas';

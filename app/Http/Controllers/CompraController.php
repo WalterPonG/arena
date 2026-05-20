@@ -5,7 +5,8 @@ namespace App\Http\Controllers;
 use App\Http\Resources\EntradaResource;
 use App\Services\CompraService;
 use Illuminate\Http\Request;
-
+use Illuminate\Support\Facades\Mail;
+use App\Mail\CompraConfirmadaMail;
 class CompraController extends Controller
 {
     /**

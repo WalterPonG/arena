@@ -5,20 +5,21 @@ namespace App\Services;
 use App\Models\EstadoAsiento;
 use App\Models\Entrada;
 use Illuminate\Support\Facades\DB;
-
+use Illuminate\Support\Facades\Mail;
+use App\Mail\CompraConfirmadaMail;
 class CompraService
 {
     /**
      * Procesar compra de múltiples reservas
      */
-    public function procesarCompra(array $reservasIds, $userId)
+    public function procesarCompra(array $reservasIds, $user)
     {
         $entradas = [];
 
         DB::beginTransaction();
         try {
             foreach ($reservasIds as $reservaId) {
-                $reserva = $this->obtenerReserva($reservaId, $userId);
+                $reserva = $this->obtenerReserva($reservaId, $user->id);
                 
                 // Verificar expiración
                 $this->verificarNoExpirada($reserva);
@@ -30,15 +31,24 @@ class CompraService
                 $reserva->marcarComoVendido();
                 
                 // Crear entrada
-                $entrada = $this->crearEntrada($reserva, $precio, $userId);
+                $entrada = $this->crearEntrada($reserva, $precio, $user->id);
                 
                 $entradas[] = $entrada;
             }
 
             DB::commit();
-            
-            return collect($entradas)->load(['evento', 'asiento.sector']);
-            
+
+
+
+            $entradasFinales = collect($entradas)->load(['evento', 'asiento.sector']);
+
+
+
+	    Mail::to($user->email)->send(
+    	       new CompraConfirmadaMail($entradasFinales)
+   	    );
+
+	    return $entradasFinales;
         } catch (\Exception $e) {
             DB::rollBack();
             throw $e;

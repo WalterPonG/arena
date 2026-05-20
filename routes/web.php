@@ -6,6 +6,17 @@ use App\Http\Controllers\CheckoutController;
 use App\Http\Controllers\Web\EventoWebController;
 use App\Http\Controllers\CarritoController;
 use App\Http\Controllers\EntradaController;
+use Illuminate\Support\Facades\Mail;
+
+Route::get('/test-mail', function () {
+    Mail::raw('Esto es una prueba', function ($message) {
+        $message->to('tu_correo_real@gmail.com')
+                ->subject('Test Roig Arena');
+    });
+
+    return 'mail enviado';
+});
+
 Route::get('/', function () {
     return view('eventos.index');
 });
