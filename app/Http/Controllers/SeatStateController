@@ -1,0 +1,21 @@
+namespace App\Http\Controllers;
+
+use Illuminate\Http\Request;
+use App\Models\SeatLock;
+use App\Models\Entrada;
+
+class SeatStateController extends Controller
+{
+    public function state($eventoId)
+    {
+	if (!$eventoId {
+		return response()->json(['error' => 'evento requerido'], 400);
+	}
+
+        return response()->json([
+            'locks' => SeatLock::where('evento_id', $eventoId)->get(),
+            'sold' => Entrada::where('evento_id', $eventoId)
+                ->pluck('asiento_id')
+        ]);
+    }
+}
