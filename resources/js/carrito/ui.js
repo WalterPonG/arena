@@ -22,37 +22,76 @@ function getEventoId() {
     return id;
 }
 function applySeatState(data) {
-
     const locked = new Set(data.locked.map(Number));
     const sold = new Set(data.sold.map(Number));
-
+    const mySet = new Set(CarritoStore.get().map(i => Number(i.asiento_id)));
     document.querySelectorAll('.asiento-btn').forEach(btn => {
         const id = Number(btn.dataset.id);
 
-        // reset
-        btn.onclick = null;
-        btn.classList.remove('btn-danger','btn-secondary','btn-outline-light');
+        btn.classList.remove('seat--free', 'seat--locked', 'seat--sold', 'seat--mine');
+        btn.disabled = false;
 
         if (sold.has(id)) {
-            btn.classList.add('btn-dark');
+            btn.classList.add('seat--sold');
             btn.disabled = true;
-            btn.title = 'Vendido';
             return;
         }
 
         if (locked.has(id)) {
-            btn.classList.add('btn-danger');
+            btn.classList.add('seat--locked');
             btn.disabled = true;
-            btn.title = 'Reservado';
             return;
         }
 
-        // libre
-        btn.classList.add('btn-outline-light');
-        btn.style.pointerEvents = 'auto';
-        btn.style.opacity = '1';
+	if ( mySet.has(id)) {
+		btn.classList.add('seat--mine');
+		return;
+	}
+
+        btn.classList.add('seat--free');
     });
 }
+
+function showTooltip(btn) {
+    const tooltip = document.createElement('div');
+
+    tooltip.className = 'seat-tooltip';
+    tooltip.innerHTML = `
+        <strong>Sector:</strong> ${btn.dataset.sector}<br>
+        <strong>Fila:</strong> ${btn.dataset.fila}<br>
+        <strong>Asiento:</strong> ${btn.dataset.numero}<br>
+        <strong>Precio:</strong> ${btn.dataset.precio} €
+    `;
+
+    document.body.appendChild(tooltip);
+
+    const rect = btn.getBoundingClientRect();
+
+    tooltip.style.position = 'fixed';
+    tooltip.style.left = rect.left + 'px';
+    tooltip.style.top = (rect.top - 80) + 'px';
+
+    btn._tooltip = tooltip;
+}
+
+function hideTooltip(btn) {
+    if (btn._tooltip) {
+        btn._tooltip.remove();
+        btn._tooltip = null;
+    }
+}
+
+document.addEventListener('mouseover', (e) => {
+    const seat = e.target.closest('.asiento-btn');
+    if (!seat) return;
+    showTooltip(seat);
+});
+
+document.addEventListener('mouseout', (e) => {
+    const seat = e.target.closest('.asiento-btn');
+    if (!seat) return;
+    hideTooltip(seat);
+});
 async function fetchSeatState(eventoId) {
 
 
@@ -102,18 +141,14 @@ async function pintarLocks() {
     document.querySelectorAll('.asiento-btn').forEach(btn => {
         const id = Number(btn.dataset.id);
 
-        btn.classList.remove('btn-danger', 'btn-success', 'btn-outline-light');
+        // no tocar backend estados
+        btn.classList.remove('btn-success');
 
         if (mySet.has(id)) {
-            btn.classList.add('btn-success');
-        } else if (lockedSet.has(id)) {
-            btn.classList.add('btn-danger');
-        } else {
-            btn.classList.add('btn-outline-light');
+            btn.classList.add('btn-success'); // solo selección usuario
         }
     });
 }
-
 async function startRealtimeSeats() {
     const eventoId = getEventoId();
 

@@ -1,0 +1,159 @@
+/* =========================
+   BASE SEAT
+========================= */
+
+/*.asiento-btn {
+    width: 32px;
+    height: 32px;
+    border-radius: 6px;
+    font-size: 11px;
+    padding: 0;
+    cursor: pointer;
+    transition: all .15s ease;
+    border: 1px solid #ccc;
+    background: #f5f5f5;
+    color: #111;
+}
+.asiento-btn {
+    width: 32px;
+    height: 32px;
+    border-radius: 6px;
+    font-size: 11px;
+    padding: 0;
+    cursor: pointer;
+    transition: 0.15s ease;
+    background: #f5f5f5;
+    border: 1px solid #ccc;
+}*/
+
+.asiento-btn {
+    all: unset;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+/* =========================
+   ESTADOS (CORE LOGIC)
+========================= */
+
+
+/* =========================
+   INTERACCIÓN
+========================= */
+
+.asiento-btn:hover:not(.seat--sold) {
+    transform: scale(1.08);
+}
+
+/* LIBRE */
+.seat--free {
+    background: #e5e7eb !important;
+    color: #111;
+}
+
+/* LOCKED */
+.seat--locked {
+    background: #ef4444 !important;
+    color: white;
+    pointer-events: none;
+}
+
+/* SOLD */
+.seat--sold {
+    background: #111827 !important;
+    opacity: 0.6;
+    pointer-events: none;
+    color: white;
+}
+
+/* MÍO */
+.seat--mine {
+    outline: 2px solid #facc15;
+    transform: scale(1.05);
+}
+.seat-tooltip {
+    background: rgba(17, 24, 39, 0.95);
+    color: #fff;
+    padding: 8px 10px;
+    border-radius: 8px;
+    font-size: 12px;
+    pointer-events: none;
+    z-index: 9999;
+    box-shadow: 0 6px 20px rgba(0,0,0,0.3);
+    transform: translateY(-5px);
+}
+
+.seat-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 10px;
+}
+
+/* efecto estadio: filas centrales más grandes */
+.seat-row:nth-child(3n) {
+    transform: scale(1.02);
+}
+
+.seat-row:nth-child(5n) {
+    transform: scale(1.05);
+}
+
+.seat-row[data-row="A"] { transform: scale(0.9); }
+.seat-row[data-row="B"] { transform: scale(0.95); }
+.seat-row[data-row="C"] { transform: scale(1); }
+.seat-row[data-row="D"] { transform: scale(1.05); }
+.seat-row[data-row="E"] { transform: scale(1.1); }
+
+.stadium-map {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding: 20px;
+}
+
+/* filas */
+.stadium-row {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+}
+
+/* etiqueta fila */
+.row-label {
+    width: 30px;
+    text-align: right;
+    color: #888;
+    font-size: 12px;
+}
+
+/* contenedor asientos */
+.row-seats {
+    display: grid;
+    grid-template-columns: repeat(25, 1fr);
+    gap: 6px;
+    flex: 1;
+    justify-content: center;
+}
+
+/* efecto estadio */
+.stadium-row:nth-child(odd) {
+    transform: scale(0.98);
+}
+
+.stadium-row:nth-child(even) {
+    transform: scale(1.02);
+}
+
+.seat-row-seats {
+    display: grid;
+    grid-template-columns: repeat(20, 32px);
+    gap: 6px;
+    align-items: center;
+}

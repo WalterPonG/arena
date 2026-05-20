@@ -33,45 +33,105 @@
 
             <hr>
 
-            {{-- TÍTULO --}}
             <div class="d-flex justify-content-between align-items-center mb-4">
                 <h3>Selección de asientos</h3>
             </div>
 
-            {{-- ASIENTOS --}}
-            @foreach($evento->precios as $precio)
+		@php
+		$asientos = collect();
 
-                <div class="mb-5">
+		foreach ($evento->precios as $precio) {
+    			foreach ($precio->sector->asientos as $asiento) {
+        			$asientos->push((object)[
+            			'id' => $asiento->id,
+            			'fila' => $asiento->fila,
+            			'numero' => $asiento->numero,
+            			'sector' => $precio->sector->nombre,
+            			'precio' => $precio->precio,
+        			]);
+    			}
+		}
 
-                    <h4 class="text-warning mb-3">
-                        {{ $precio->sector->nombre }}
-                        —
-                        {{ number_format($precio->precio, 2) }} €
-                    </h4>
+		$mapa = $asientos->groupBy('fila');
+		@endphp
 
-                    <div class="d-flex flex-wrap gap-2">
 
-                        @foreach($precio->sector->asientos->take(40) as $asiento)
+		@php
+		$asientos = collect();
 
-                            <button
-                                class="btn btn-outline-light asiento-btn"
-                                data-id="{{ $asiento->id }}"
-                                data-evento="{{ $evento->id }}"
-                                data-sector="{{ $precio->sector->nombre }}"
-                                data-fila="{{ $asiento->fila }}"
-                                data-numero="{{ $asiento->numero }}"
-                                data-precio="{{ $precio->precio }}"
-                            >
-                                {{ $asiento->fila }}-{{ $asiento->numero }}
-                            </button>
+	foreach ($evento->precios as $precio) {
+    	foreach ($precio->sector->asientos as $asiento) {
+        $asientos->push((object)[
+            'id' => $asiento->id,
+            'fila' => $asiento->fila,
+            'numero' => $asiento->numero,
+            'sector' => $precio->sector->nombre,
+            'precio' => $precio->precio,
+        	]);
+    		}
+		}
 
-                        @endforeach
+		$mapa = $asientos->groupBy('fila');
+		@endphp
+
+            {{-- ========================= --}}
+            {{-- 🔥 MAPA DE ASIENTOS --}}
+            {{-- ========================= --}}
+
+            @php
+                $asientos = collect();
+
+                foreach ($evento->precios as $precio) {
+                    foreach ($precio->sector->asientos as $asiento) {
+                        $asientos->push((object)[
+                            'id' => $asiento->id,
+                            'fila' => $asiento->fila,
+                            'numero' => $asiento->numero,
+                            'sector' => $precio->sector->nombre,
+                            'precio' => $precio->precio,
+                        ]);
+                    }
+                }
+
+                $asientosPorFila = $asientos->groupBy('fila');
+            @endphp
+
+            <div class="seat-map">
+
+                @foreach($asientosPorFila as $fila => $asientosFila)
+
+                    <div class="seat-row seat-row-{{ $fila }}">
+
+                        {{-- 🔥 etiqueta de fila --}}
+                        <div class="seat-row-label">
+                            {{ $fila }}
+                        </div>
+
+                        {{-- 🔥 grid de asientos --}}
+                        <div class="seat-row-seats">
+
+                            @foreach($asientosFila as $asiento)
+
+                                <button
+                                    class="seat asiento-btn"
+                                    data-id="{{ $asiento->id }}"
+                                    data-sector="{{ $asiento->sector }}"
+                                    data-fila="{{ $asiento->fila }}"
+                                    data-numero="{{ $asiento->numero }}"
+                                    data-precio="{{ $asiento->precio }}"
+                                >
+                                    {{ $asiento->numero }}
+                                </button>
+
+                            @endforeach
+
+                        </div>
 
                     </div>
 
-                </div>
+                @endforeach
 
-            @endforeach
+            </div>
 
         </div>
 
@@ -79,7 +139,7 @@
 
 </div>
 
-{{-- 🔥 IMPORTANTE: datos globales para JS --}}
+{{-- 🔥 DATOS GLOBAL JS --}}
 <script>
     document.body.dataset.eventoId = "{{ $evento->id }}";
     document.body.dataset.auth = "{{ auth()->check() ? 1 : 0 }}";
