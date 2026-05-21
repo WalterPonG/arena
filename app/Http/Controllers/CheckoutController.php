@@ -84,18 +84,33 @@ if (
 
 	// recargar correctamente entradas
 
-		$entradasConRelaciones = $entradasConRelaciones->map(function ($entrada) use ($discount) {
-    		$entrada->precio_original = $entrada->precio_pagado / (1 - $discount);
-    		$entrada->precio_final = $entrada->precio_pagado;
-    		$entrada->descuento = $discount;
-    		return $entrada;
-		});
+	$entradasConRelaciones = Entrada::with([
+    		'evento',
+    		'asiento.sector'
+	])
+	->whereIn('id', collect($entradas)->pluck('id'))
+	->get();
+
+	$entradasConRelaciones = $entradasConRelaciones->map(function ($entrada) use ($discount) {
+
+    if ($discount > 0) {
+        $entrada->precio_original = $entrada->precio_pagado / (1 - $discount);
+    } else {
+        $entrada->precio_original = $entrada->precio_pagado;
+    }
+
+    $entrada->precio_final = $entrada->precio_pagado;
+    $entrada->descuento = $discount;
+
+    return $entrada;
+	});
+
 	Mail::to(env('MAIL_TEST_TO'))->send(
     	new CompraConfirmadaMail($entradasConRelaciones)
 	);
         return response()->json([
             'ok' => true,
-            'entradas' => $entradasConRelaciones
+            'entradas' => $entradasConRelaciones,
 	    'discount' => $discount
         ]);
     }

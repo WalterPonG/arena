@@ -51,7 +51,7 @@
 </div>
 
 
-<body class="bg-dark text-white" data-evento-id="@yield('$evento->id')">
+<body class="bg-dark text-white" data-evento-id="{{ $evento->id ?? '' }}">
 
     {{-- NAVBAR GLOBAL --}}
     @include('partials.navbar')

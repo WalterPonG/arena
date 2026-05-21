@@ -177,9 +177,14 @@ function render() {
     const discountActive = window.discountSeconds > 0;
     carrito.forEach(item => {
 
-       const original = parseFloat(item.precio);
-       const discounted = window.discountActive ? original * 0.5 : original;
-
+	const original = Number(
+    	String(item.precio)
+        .replace('€', '')
+        .replace(',', '.')
+        .trim()
+	);
+       const discounted = discountActive ? original * 0.5 : original;
+	console.log({original,discounted});
         total += discounted;
 
         contenedor.innerHTML += `
