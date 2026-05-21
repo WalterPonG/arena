@@ -61,5 +61,26 @@
         @yield('content')
     </main>
 
+	<div id="loadingOverlay" style="
+    display:none;
+    position:fixed;
+    top:0;
+    left:0;
+    width:100%;
+    height:100%;
+    background:rgba(0,0,0,0.7);
+    z-index:9999;
+    justify-content:center;
+    align-items:center;
+    flex-direction:column;
+    color:white;
+">
+    <h3>Procesando compra...</h3>
+
+    <div style="width:300px; height:10px; background:#444; border-radius:5px; overflow:hidden; margin-top:15px;">
+        <div id="progressBar" style="width:0%; height:100%; background:#ffc107;"></div>
+    </div>
+</div>
+
 </body>
 </html>

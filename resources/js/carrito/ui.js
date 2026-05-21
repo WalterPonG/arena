@@ -11,7 +11,37 @@ function toggleDropdown() {
     dropdownAbierto = !dropdownAbierto;
     el.style.display = dropdownAbierto ? 'block' : 'none';
 }
+function startLoading() {
+    const overlay = document.getElementById('loadingOverlay');
+    const bar = document.getElementById('progressBar');
 
+    if (!overlay || !bar) return;
+
+    overlay.style.display = 'flex';
+
+    let progress = 0;
+
+    overlay._interval = setInterval(() => {
+        progress += 2;
+        bar.style.width = progress + '%';
+
+        if (progress >= 100) {
+            clearInterval(overlay._interval);
+        }
+    }, 50);
+}
+
+function stopLoading() {
+    const overlay = document.getElementById('loadingOverlay');
+    const bar = document.getElementById('progressBar');
+
+    if (!overlay) return;
+
+    clearInterval(overlay._interval);
+
+    overlay.style.display = 'none';
+    bar.style.width = '0%';
+}
 function getEventoId() {
     const id = document.body.dataset.eventoId;
     
@@ -239,13 +269,13 @@ applySeatState(data);
     if (!buy) return;
 
     if (!requireLogin()) return;
-
+    startLoading();
     try {
         const carrito = CarritoStore.get();
         const eventoId = getEventoId();
 
         const result = await checkout(eventoId, carrito);
-
+        stopLoading();
         alert('Compra OK');
 
         CarritoStore.set([]);
@@ -264,6 +294,7 @@ applySeatState(data);
         window.location.href = '/mis-entradas';
 
     } catch (err) {
+	stopLoading();
         alert(err.message || 'Error checkout');
     }
 });
