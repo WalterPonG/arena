@@ -56,6 +56,24 @@
     {{-- NAVBAR GLOBAL --}}
     @include('partials.navbar')
 
+
+		{{-- 🔥 BANNER DESCUENTO GLOBAL --}}
+    @if(isset($discountActive) && $discountActive)
+
+        <div id="discount-banner" style="
+            background:#ffc107;
+            color:#000;
+            padding:10px;
+            text-align:center;
+            font-weight:bold;
+        ">
+            🎉 Tienes 50% de descuento activo —
+            <span id="discount-timer"></span>
+        </div>
+
+    @endif
+
+
     {{-- CONTENIDO --}}
     <main class="container py-4">
         @yield('content')

@@ -22,10 +22,25 @@ class CheckoutController extends Controller
         $eventoId = $request->evento_id;
         $carrito = $request->carrito;
 
+	$user = auth()->user();
+		$discount = 0;
+
+$user = auth()->user();
+
+if (
+    $user &&
+    $user->is_new_user &&
+    $user->created_at &&
+    $user->created_at->diffInMinutes(now()) <= 5
+) {
+    $discount = 0.5;
+}
+
+
+
         DB::beginTransaction();
 
         $entradas = [];
-
         foreach ($carrito as $item) {
 
             $asientoId = $item['asiento_id'];
@@ -41,12 +56,17 @@ class CheckoutController extends Controller
             }
 
             $codigo = Str::uuid()->toString();
+		$precio = $item['precio'];
 
+
+		if ($discount > 0) {
+    			$precio = $precio * (1 - $discount);
+		}
             $entrada = Entrada::create([
                 'user_id' => auth()->id(),
                 'evento_id' => $eventoId,
                 'asiento_id' => $item['asiento_id'],
-                'precio_pagado' => $item['precio'],
+                'precio_pagado' => $precio,
                 'codigo_qr' => $codigo
             ]);
 
@@ -63,17 +83,20 @@ class CheckoutController extends Controller
         DB::commit();
 
 	// recargar correctamente entradas
-	$entradasConRelaciones = Entrada::with(['evento', 'asiento.sector'])
-    ->whereIn('id', collect($entradas)->pluck('id'))
-    ->get();
 
-
+		$entradasConRelaciones = $entradasConRelaciones->map(function ($entrada) use ($discount) {
+    		$entrada->precio_original = $entrada->precio_pagado / (1 - $discount);
+    		$entrada->precio_final = $entrada->precio_pagado;
+    		$entrada->descuento = $discount;
+    		return $entrada;
+		});
 	Mail::to(env('MAIL_TEST_TO'))->send(
     	new CompraConfirmadaMail($entradasConRelaciones)
 	);
         return response()->json([
             'ok' => true,
             'entradas' => $entradasConRelaciones
+	    'discount' => $discount
         ]);
     }
 }

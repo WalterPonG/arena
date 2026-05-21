@@ -88,6 +88,7 @@ class AuthController extends Controller
         'apellido' => $request->apellido,
         'email' => $request->email,
         'password' => Hash::make($request->password),
+	'is_new_user' => true,
     	]);
 	/*    $data = $request->validate([
             'nombre' => ['required', 'string', 'min:1'],

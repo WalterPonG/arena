@@ -30,6 +30,34 @@ function startLoading() {
         }
     }, 50);
 }
+function startDiscountTimer(seconds) {
+    const el = document.getElementById('discount-timer');
+    if (!el) return;
+
+    let time = Math.floor(seconds);
+
+    const interval = setInterval(() => {
+        const m = Math.floor(time / 60);
+        const s = time % 60;
+
+        el.textContent = `${m}:${s.toString().padStart(2, '0')}`;
+
+        time--;
+
+        if (time < 0) {
+            clearInterval(interval);
+
+            const banner = document.getElementById('discount-banner');
+            if (banner) banner.remove();
+        }
+    }, 1000);
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    if (window.discountSeconds > 0) {
+        startDiscountTimer(window.discountSeconds);
+    }
+});
 
 function stopLoading() {
     const overlay = document.getElementById('loadingOverlay');
@@ -146,14 +174,31 @@ function render() {
 
     let total = 0;
 
+    const discountActive = window.discountSeconds > 0;
     carrito.forEach(item => {
-        total += Number(item.precio);
+
+       const original = parseFloat(item.precio);
+       const discounted = window.discountActive ? original * 0.5 : original;
+
+        total += discounted;
 
         contenedor.innerHTML += `
             <div class="py-2 border-bottom">
                 <strong>${item.sector}</strong><br>
                 Fila ${item.fila} - ${item.numero}
-                <div>${item.precio} €</div>
+
+		<div>
+            ${window.discountSeconds > 0 ? `
+                <span style="text-decoration:line-through; opacity:0.6;">
+                    ${original.toFixed(2)} €
+                </span>
+                <strong style="color:#28a745;">
+                    ${discounted.toFixed(2)} €
+                </strong>
+            ` : `
+                <strong>${original.toFixed(2)} €</strong>
+            `}
+        </div>
                 <button class="btn btn-sm btn-danger btn-remove" data-id="${item.asiento_id}">
                     Eliminar
                 </button>

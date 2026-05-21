@@ -9,9 +9,25 @@ class EventoWebController extends Controller
 {
     public function index()
     {
-        $eventos = Evento::orderBy('fecha')->get();
+    $eventos = Evento::orderBy('fecha')->get();
 
-        return view('eventos.index', compact('eventos'));
+    $user = auth()->user();
+
+    $discountActive = false;
+    $discountSeconds = 0;
+
+    if ($user && $user->is_new_user && $user->created_at->gt(now()->subMinutes(5))) {
+        $discountActive = true;
+        $discountSeconds = 300 - $user->created_at->diffInSeconds(now());
+    }
+
+    return view('eventos.index', compact(
+        'eventos',
+        'discountActive',
+        'discountSeconds'
+    ));
+
+
     }
 
     public function show(Evento $evento) {

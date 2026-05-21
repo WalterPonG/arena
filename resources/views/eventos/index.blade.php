@@ -1,7 +1,16 @@
 @extends('layouts.app')
 
 @section('content')
+@if($discountActive)
+    <div id="discount-banner">
+        🎉 50% descuento activo —
+        <span id="discount-timer"></span>
+    </div>
 
+    <script>
+        window.discountSeconds = {{ $discountSeconds }};
+    </script>
+@endif
 <h1 class="mb-4 fw-bold">
     Próximos Eventos
 </h1>
