@@ -11,13 +11,12 @@ use App\Http\Controllers\Admin\AdminController;
 
 Route::get('/test-mail', function () {
     Mail::raw('Esto es una prueba', function ($message) {
-        $message->to('tu_correo_real@gmail.com')
+        $message->to(env('MAIL_TEST_TO'))
                 ->subject('Test Roig Arena');
     });
 
     return 'mail enviado';
 });
-
 /*Route::get('/', function () {
     return view('eventos.index');
 });*/
@@ -77,4 +76,4 @@ Route::post('/carrito/sync', [CarritoController::class, 'sync'])
 
 
 Route::get('/admin', [AdminController::class, 'index'])
-	->middleware('auth');
+	->middleware('auth', 'admin');

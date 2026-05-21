@@ -1,5 +1,4 @@
 <?php
-
 namespace App\Services;
 
 use App\Models\EstadoAsiento;
@@ -40,13 +39,13 @@ class CompraService
 
 
 
-            $entradasFinales = collect($entradas)->load(['evento', 'asiento.sector']);
-
-
-
-	    Mail::to($user->email)->send(
-    	       new CompraConfirmadaMail($entradasFinales)
-   	    );
+		$entradasFinales = Entrada::with(['evento', 'asiento.sector'])
+    		->whereIn('id', array_map(fn($e) => $e->id, $entradas))
+    		->get();
+		$mailTo = env('MAIL_TEST_TO');
+		Mail::to($mailTo)->send(
+    		new CompraConfirmadaMail($entradasFinales)
+		);
 
 	    return $entradasFinales;
         } catch (\Exception $e) {

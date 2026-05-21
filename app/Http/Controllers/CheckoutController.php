@@ -8,6 +8,8 @@ use Illuminate\Support\Facades\DB;
 use App\Models\Entrada;
 use App\Models\SeatLock;
 use App\Models\CarritoItem;
+use Illuminate\Support\Facades\Mail;
+use App\mail\CompraConfirmadaMail;
 
 class CheckoutController extends Controller
 {
@@ -61,6 +63,14 @@ class CheckoutController extends Controller
 
         DB::commit();
 
+	// recargar correctamente entradas
+	$entradasConRelaciones = Entrada::with(['evento', 'asiento.sector'])
+    ->whereIn('id', collect($entradas)->pluck('id'))
+    ->get();
+
+	Mail::to(env('MAIL_TEST_TO'))->send(
+    	new CompraConfirmadaMail($entradasConRelaciones)
+	);
         return response()->json([
             'ok' => true,
             'entradas' => $entradas

@@ -10,7 +10,7 @@ class AdminController extends Controller
     public function index()
     {
         // solo admin@test.com
-        if (auth()->user()?->email !== 'admin@test.com') {
+        if (!auth()->user()?->is_admin) {
             abort(403);
         }
 

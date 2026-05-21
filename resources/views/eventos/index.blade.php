@@ -14,7 +14,7 @@
 
             <div class="card bg-secondary text-white h-100 shadow">
 
-                <img src="{{ $evento->poster_url }}" class="card-img-top">
+		<img src="{{ $evento->poster_url ?? asset('img/default.jpg') }}" class="card-img-top">
 
                 <div class="card-body d-flex flex-column">
 
