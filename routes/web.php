@@ -7,6 +7,7 @@ use App\Http\Controllers\Web\EventoWebController;
 use App\Http\Controllers\CarritoController;
 use App\Http\Controllers\EntradaController;
 use Illuminate\Support\Facades\Mail;
+use App\Http\Controllers\Admin\AdminController;
 
 Route::get('/test-mail', function () {
     Mail::raw('Esto es una prueba', function ($message) {
@@ -17,11 +18,21 @@ Route::get('/test-mail', function () {
     return 'mail enviado';
 });
 
-Route::get('/', function () {
+/*Route::get('/', function () {
     return view('eventos.index');
+});*/
+
+Route::get('/', function () {
+	if (auth()->check()) {
+        return redirect('/eventos');
+    }
+     return redirect('/login');
 });
 
-Route::get('/', [EventoWebController::class, 'index']);
+Route::delete('/admin/entradas/{id}', [AdminController::class, 'destroyEntrada'])
+    ->middleware('auth');
+Route::get('/eventos', [EventoWebController::class, 'index']);
+// Route::get('/', [EventoWebController::class, 'index']);
 Route::get('/eventos/{evento}', [EventoWebController::class, 'show']);
 
 Route::get('/login', [AuthController::class, 'showLogin']);
@@ -63,3 +74,7 @@ Route::post('/logout', function () {
 
 Route::post('/carrito/sync', [CarritoController::class, 'sync'])
     ->middleware('auth');
+
+
+Route::get('/admin', [AdminController::class, 'index'])
+	->middleware('auth');

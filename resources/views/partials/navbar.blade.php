@@ -10,6 +10,12 @@
         {{-- DERECHA --}}
         <div class="ms-auto d-flex align-items-center gap-2 position-relative">
 
+	    @if(auth()->check() && auth()->user()->email === 'admin@test.com')
+		<a href="/admin" class="btn btn-warning me-2">
+			Admin
+		</a>
+	    @endif
+
             {{-- LOGOUT --}}
             @auth
                 <form method="POST" action="{{ route('logout') }}">

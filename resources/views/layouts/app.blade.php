@@ -19,6 +19,9 @@
 
     {{-- Vite --}}
     @vite(['resources/js/app.js'])
+    @if(request()->is('admin*'))
+        @vite(['resources/js/admin.js'])
+    @endif
 </head>
 
 <div class="modal fade" id="loginModal" tabindex="-1">
