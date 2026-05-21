@@ -10,7 +10,6 @@ use App\Models\SeatLock;
 use App\Models\CarritoItem;
 use Illuminate\Support\Facades\Mail;
 use App\mail\CompraConfirmadaMail;
-
 class CheckoutController extends Controller
 {
     public function store(Request $request)
@@ -68,12 +67,13 @@ class CheckoutController extends Controller
     ->whereIn('id', collect($entradas)->pluck('id'))
     ->get();
 
+
 	Mail::to(env('MAIL_TEST_TO'))->send(
     	new CompraConfirmadaMail($entradasConRelaciones)
 	);
         return response()->json([
             'ok' => true,
-            'entradas' => $entradas
+            'entradas' => $entradasConRelaciones
         ]);
     }
 }
