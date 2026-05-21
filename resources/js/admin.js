@@ -23,3 +23,30 @@ document.addEventListener('click', async (e) => {
         alert(err.message);
     }
 });
+
+document.addEventListener('DOMContentLoaded', () => {
+
+    const input = document.getElementById('buscar-entrada');
+
+    if (!input) return;
+
+    input.addEventListener('input', () => {
+
+        const value = input.value.trim();
+
+        document.querySelectorAll('tbody tr').forEach(row => {
+
+            const id = row.dataset.entradaId;
+
+            if (value === '' || id.includes(value)) {
+                row.style.display = '';
+            } else {
+                row.style.display = 'none';
+            }
+
+        });
+
+    });
+
+});
+

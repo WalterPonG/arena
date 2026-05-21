@@ -10,7 +10,15 @@
 
     <div class="card bg-dark text-white border-secondary">
         <div class="card-body">
-
+	<div class="mb-3">
+    	<input
+        	type="text"
+        	id="buscar-entrada"
+        	class="form-control"
+        	placeholder="Buscar entrada por ID..."
+    	>
+	</div>
+	<div class="table-responsive">
             <table class="table table-dark table-hover align-middle">
 
                 <thead>
@@ -29,7 +37,7 @@
 
                     @foreach($entradas as $entrada)
 
-                        <tr>
+                        <tr data-entrada-id="{{ $entrada->id }}">
                             <td>{{ $entrada->id }}</td>
 
                             <td>
@@ -70,7 +78,7 @@
                 </tbody>
 
             </table>
-
+	</div>
         </div>
     </div>
 
